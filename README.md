@@ -1,5 +1,9 @@
 # zig-astar
 
+![maze](https://github.com/keenanjohnson/zig-astar-example/blob/main/demo.gif)
+
+*Full example maze from https://github.com/keenanjohnson/zig-astar-example/.*
+
 A\* pathfinding for Zig, in a single file with no dependencies.
 
 Built and tested against Zig 0.16.0.
