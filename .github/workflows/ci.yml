@@ -17,3 +17,24 @@ jobs:
         run: zig build test
       - name: Build example
         run: zig build example
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.16.0
+      - name: Install kcov
+        run: sudo apt-get update && sudo apt-get install -y kcov
+      - name: Build test binary
+        run: |
+          mkdir -p zig-out
+          zig test src/astar.zig --test-no-exec -femit-bin=zig-out/astar-test
+      - name: Measure coverage
+        run: kcov --include-pattern=src/ zig-out/coverage zig-out/astar-test
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: zig-out/coverage
