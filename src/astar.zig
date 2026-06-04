@@ -19,8 +19,10 @@ const std = @import("std");
 /// - `Context` describes the graph. It must expose two methods:
 ///
 ///   ```zig
-///   /// Estimated remaining cost from `node` to `goal`.
-///   /// Must be admissible (never overestimate) for A* to return optimal paths.
+///   /// Estimated remaining cost from `node` to `goal`. Must be non-negative,
+///   /// zero when `node == goal`, and admissible (never overestimate the true
+///   /// remaining cost) for A* to return optimal paths. Returning a constant `0`
+///   /// is always admissible and reduces the search to Dijkstra's algorithm.
 ///   pub fn heuristic(self: Context, node: Node, goal: Node) Cost
 ///
 ///   /// Report every node reachable from `node` and the cost of getting there
@@ -98,8 +100,9 @@ pub fn AStar(comptime Node: type, comptime Cost: type, comptime Context: type) t
                 }
 
                 // The queue may hold stale entries for a node that was later
-                // reached more cheaply. Skip them.
-                const best = g_score.get(current.node) orelse continue;
+                // reached more cheaply. Skip them. Every queued node has a
+                // g_score entry, so the lookup always succeeds.
+                const best = g_score.get(current.node).?;
                 if (current.g > best) continue;
 
                 scratch.clearRetainingCapacity();

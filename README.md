@@ -37,8 +37,9 @@ const Grid = struct {
     width: i32,
     height: i32,
 
-    // Estimated cost from node to goal. Don't overestimate, or the path
-    // may not be optimal. Manhattan distance works for 4-way movement.
+    // Estimated cost from node to goal. Must be non-negative and zero at the
+    // goal; don't overestimate, or the path may not be optimal. Manhattan
+    // distance works for 4-way movement.
     pub fn heuristic(_: Grid, node: Point, goal: Point) u32 {
         return @abs(node.x - goal.x) + @abs(node.y - goal.y);
     }
@@ -84,6 +85,11 @@ A couple of things to keep in mind: the node type has to work as an
 `std.AutoHashMap` key, so stick to integers or structs of integers — no
 pointers or slices. The cost type can be any number, integer or float. And if
 you return `0` from `heuristic`, you get Dijkstra's algorithm.
+
+Costs accumulate along the path, so pick a `Cost` type wide enough for your
+worst-case total — `g + heuristic` is computed with ordinary arithmetic, which
+overflows (a panic in Debug and `ReleaseSafe` builds) if the running total
+exceeds the type's range.
 
 ## Running it
 
